@@ -10,40 +10,26 @@
         :root { --soft-pink: #fff5f7; --accent-pink: #fbcfe8; --text-color: #704f5e; }
         body { background-color: var(--soft-pink); font-family: 'Quicksand', sans-serif; color: var(--text-color); margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
         .cute-heading { font-family: 'Cherry Bomb One', cursive; }
-        
-        /* Fixed Aspect Ratio Container */
         .viewport-container { width: 100%; max-width: 400px; height: 90vh; max-height: 750px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 20px; z-index: 10; }
-        
-        /* Instax Polish */
         .instax-card { background: white; padding: 12px 12px 50px 12px; box-shadow: 0 15px 35px rgba(244, 114, 182, 0.15); border-radius: 4px; width: 100%; aspect-ratio: 4 / 5.5; display: flex; flex-direction: column; }
         .camera-box { background: #f8fafc; width: 100%; height: 100%; overflow: hidden; position: relative; border-radius: 2px; }
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        
-        /* Grid Selection Style */
         .grid-option { background: white; border: 2px solid var(--accent-pink); border-radius: 16px; padding: 18px; width: 100%; transition: all 0.2s ease; cursor: pointer; text-align: center; font-weight: bold; }
         .grid-option.active { background: #fdf2f8; border-color: #f472b6; transform: scale(1.02); }
-        
-        /* Custom Animations */
-        @keyframes softFadeInUp {
-            0% { opacity: 0; transform: translateY(30px) scale(0.9); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes gentlePulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
+        @keyframes softFadeInUp { 0% { opacity: 0; transform: translateY(30px) scale(0.9); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes gentlePulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
         .animate-soft-intro { animation: softFadeInUp 1s ease-out forwards; }
         .animate-sparkle { animation: gentlePulse 2s infinite ease-in-out; }
-
         .flash-effect { animation: flashAnim 0.4s ease-out; }
         @keyframes flashAnim { 0% { background: white; opacity: 1; } 100% { background: transparent; opacity: 0; } }
         .hidden { display: none !important; }
+        .footer-credit { position: absolute; bottom: 20px; font-size: 10px; font-weight: bold; letter-spacing: 0.2em; opacity: 0.4; text-transform: uppercase; }
     </style>
 </head>
 <body>
     <div id="flash" class="fixed inset-0 z-[200] pointer-events-none"></div>
+    
     <div class="viewport-container">
-        
         <div id="step-intro" class="w-full text-center flex flex-col items-center justify-center animate-soft-intro">
             <div class="relative mb-6">
                 <span class="absolute -top-6 -left-8 text-3xl animate-sparkle">✨</span>
@@ -51,25 +37,17 @@
                 <h1 class="cute-heading text-7xl mb-1 tracking-tight">Doroti</h1>
             </div>
             <p class="text-xl opacity-70 tracking-[0.2em] mb-12 uppercase italic">Instax Studio ♡</p>
-            
-            <p class="text-sm opacity-60 mb-10 max-w-[280px]">Ready to capture your softest moments? Press start to begin! ♡</p>
-            
             <button onclick="goToGrid()" class="w-full bg-white border-2 border-pink-200 text-pink-500 font-bold py-4 rounded-full shadow-[0_5px_0_#fbcfe8] active:translate-y-1 active:shadow-[0_2px_0_#fbcfe8] transition-all uppercase tracking-widest text-lg">START ♡</button>
-            <p class="mt-16 text-[10px] uppercase tracking-widest opacity-40">Soft Girl Edition • v1.0</p>
+            <div class="footer-credit mt-20">Developed by Aaron</div>
         </div>
 
-        <div id="step-grid" class="hidden w-full space-y-4 animate-soft-intro">
+        <div id="step-grid" class="hidden w-full space-y-4 animate-soft-intro flex flex-col items-center">
             <h2 class="cute-heading text-3xl text-center mb-8">Pick a Style ♡</h2>
-            <div onclick="pick('single')" class="grid-option" id="opt-single">
-                <p class="font-bold text-base">SINGLE CLASSIC</p>
-            </div>
-            <div onclick="pick('2x2')" class="grid-option" id="opt-2x2">
-                <p class="font-bold text-base">QUAD FRAME (4 SHOTS)</p>
-            </div>
-            <div onclick="pick('strip')" class="grid-option" id="opt-strip">
-                <p class="font-bold text-base">4-CUT STRIP</p>
-            </div>
+            <div onclick="pick('single')" class="grid-option" id="opt-single">SINGLE CLASSIC</div>
+            <div onclick="pick('2x2')" class="grid-option" id="opt-2x2">QUAD FRAME (4 SHOTS)</div>
+            <div onclick="pick('strip')" class="grid-option" id="opt-strip">4-CUT STRIP</div>
             <button id="grid-next" onclick="goToBooth()" class="w-full mt-8 bg-pink-200 text-white font-bold py-4 rounded-full transition-all uppercase tracking-widest">Select STYLE</button>
+            <div class="footer-credit mt-10">Developed by Aaron</div>
         </div>
 
         <div id="step-booth" class="hidden w-full flex flex-col items-center animate-soft-intro">
@@ -78,23 +56,33 @@
                     <video id="video" autoplay playsinline></video>
                     <div id="countdown" class="absolute inset-0 flex items-center justify-center text-8xl cute-heading text-white hidden bg-pink-200/20 backdrop-blur-sm"></div>
                 </div>
-                <div class="flex-grow flex items-center justify-center"><p id="status-text" class="text-[10px] font-bold tracking-[0.2em] opacity-40 uppercase italic">Ready to snap</p></div>
+                <div class="flex-grow flex items-center justify-center">
+                    <p class="cute-heading text-xl opacity-20">Doroti ♡</p>
+                </div>
             </div>
             <button id="snap-btn" onclick="startCapture()" class="w-20 h-20 bg-white border-[8px] border-pink-100 rounded-full shadow-lg active:scale-90 transition-all"></button>
-            <p class="text-xs font-bold opacity-70 mt-3">Press to capture ♡</p>
+            <div class="footer-credit mt-10">Developed by Aaron</div>
         </div>
 
         <div id="step-result" class="hidden w-full flex flex-col items-center animate-soft-intro">
-            <div class="instax-card mb-6 shadow-2xl"><div class="camera-box" style="background: white;"><img id="final-image" class="w-full h-full object-contain"></div><div class="flex-grow flex items-center justify-center"><p class="cute-heading text-xl opacity-60">Doroti Booth ♡</p></div></div>
-            <div class="flex gap-2 w-full px-2"><button onclick="downloadImg()" class="flex-1 bg-pink-400 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest shadow-md">SAVE</button><button onclick="location.reload()" class="flex-1 bg-white border border-pink-100 text-pink-300 font-bold py-4 rounded-2xl text-xs uppercase tracking-widest">RESET</button></div>
+            <div class="instax-card mb-6 shadow-2xl">
+                <div class="camera-box" style="background: white;"><img id="final-image" class="w-full h-full object-contain"></div>
+                <div class="flex-grow flex items-center justify-center"><p class="cute-heading text-xl opacity-60">Doroti Booth ♡</p></div>
+            </div>
+            <div class="flex gap-2 w-full px-2">
+                <button onclick="downloadImg()" class="flex-1 bg-pink-400 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest shadow-md">SAVE</button>
+                <button onclick="location.reload()" class="flex-1 bg-white border border-pink-100 text-pink-300 font-bold py-4 rounded-2xl text-xs uppercase tracking-widest">RESET</button>
+            </div>
+            <div class="footer-credit mt-10">Developed by Aaron</div>
         </div>
     </div>
+
     <script>
         let mode = ''; let photos = []; const video = document.getElementById('video'); const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
         function goToGrid() { document.getElementById('step-intro').classList.add('hidden'); document.getElementById('step-grid').classList.remove('hidden'); }
         function pick(m) { mode = m; document.querySelectorAll('.grid-option').forEach(el => el.classList.remove('active')); document.getElementById('opt-'+m).classList.add('active'); const btn = document.getElementById('grid-next'); btn.style.backgroundColor = '#f472b6'; btn.innerText = "LET'S GO! ♡"; }
         async function goToBooth() { if(!mode) return; document.getElementById('step-grid').classList.add('hidden'); document.getElementById('step-booth').classList.remove('hidden'); try { const stream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 4/5, facingMode: "user" } }); video.srcObject = stream; } catch(e) { alert("Please enable camera access ♡"); } }
-        async function startCapture() { document.getElementById('snap-btn').classList.add('hidden'); document.getElementById('snap-btn').nextElementSibling.classList.add('hidden'); const total = mode === 'single' ? 1 : 4; photos = []; for(let i=0; i<total; i++) { document.getElementById('status-text').innerText = `SHOT ${i+1} OF ${total}`; await runCountdown(3); capture(); await new Promise(r => setTimeout(r, 600)); } renderFinal(); }
+        async function startCapture() { document.getElementById('snap-btn').classList.add('hidden'); const total = mode === 'single' ? 1 : 4; photos = []; for(let i=0; i<total; i++) { await runCountdown(3); capture(); await new Promise(r => setTimeout(r, 600)); } renderFinal(); }
         function runCountdown(s) { return new Promise(res => { const countEl = document.getElementById('countdown'); countEl.classList.remove('hidden'); let c = s; countEl.innerText = c; const itv = setInterval(() => { c--; if(c > 0) countEl.innerText = c; else { clearInterval(itv); countEl.classList.add('hidden'); res(); } }, 800); }); }
         function capture() { document.getElementById('flash').classList.add('flash-effect'); setTimeout(() => document.getElementById('flash').classList.remove('flash-effect'), 400); const tmp = document.createElement('canvas'); tmp.width = 800; tmp.height = 1000; const tCtx = tmp.getContext('2d'); tCtx.translate(800, 0); tCtx.scale(-1, 1); tCtx.drawImage(video, 0, 0, 800, 1000); photos.push(tmp.toDataURL('image/png')); }
         function renderFinal() { if(mode === 'single') { canvas.width = 800; canvas.height = 1000; const img = new Image(); img.onload = () => { ctx.drawImage(img, 0, 0); finalize(); }; img.src = photos[0]; } else if(mode === '2x2') { canvas.width = 800; canvas.height = 800; ctx.fillStyle = "white"; ctx.fillRect(0,0,800,800); let loaded = 0; photos.forEach((p, i) => { const img = new Image(); img.onload = () => { const x = (i%2)*405; const y = Math.floor(i/2)*405; ctx.drawImage(img, x, y, 395, 395); if(++loaded === 4) finalize(); }; img.src = p; }); } else if(mode === 'strip') { canvas.width = 400; canvas.height = 1200; ctx.fillStyle = "white"; ctx.fillRect(0,0,400,1200); let loaded = 0; photos.forEach((p, i) => { const img = new Image(); img.onload = () => { ctx.drawImage(img, 10, 10 + (i*295), 380, 285); if(++loaded === 4) finalize(); }; img.src = p; }); } }
