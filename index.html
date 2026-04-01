@@ -17,48 +17,39 @@
             min-height: 100vh; overflow: hidden;
         }
         .cute-heading { font-family: 'Cherry Bomb One', cursive; }
-        
-        /* Fixed Aspect Ratio Container */
         .viewport-container {
             width: 100%; max-width: 400px;
-            height: 90vh; max-height: 700px;
+            height: 90vh; max-height: 750px;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             position: relative; padding: 20px;
+            z-index: 10;
         }
-
-        /* Instax Polish */
         .instax-card {
             background: white;
-            padding: 12px 12px 45px 12px;
+            padding: 12px 12px 50px 12px;
             box-shadow: 0 15px 35px rgba(244, 114, 182, 0.15);
             border-radius: 4px;
             width: 100%;
             aspect-ratio: 4 / 5.5;
             display: flex; flex-direction: column;
         }
-
         .camera-box {
-            background: #eee;
+            background: #f8fafc;
             width: 100%; height: 100%;
             overflow: hidden; position: relative;
             border-radius: 2px;
         }
-
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-
-        /* Grid Selection Style */
         .grid-option {
             background: white; border: 2px solid var(--accent-pink);
-            border-radius: 16px; padding: 15px; width: 100%;
+            border-radius: 16px; padding: 18px; width: 100%;
             transition: all 0.2s ease; cursor: pointer;
-            text-align: center;
+            text-align: center; font-weight: bold;
         }
         .grid-option.active { background: #fdf2f8; border-color: #f472b6; transform: scale(1.02); }
-
         .flash-effect { animation: flashAnim 0.4s ease-out; }
         @keyframes flashAnim { 0% { background: white; opacity: 1; } 100% { background: transparent; opacity: 0; } }
-
         .hidden { display: none !important; }
     </style>
 </head>
@@ -68,27 +59,21 @@
 
     <div class="viewport-container">
         
-        <div id="step-intro" class="w-full text-center animate-in fade-in zoom-in duration-500">
+        <div id="step-intro" class="w-full text-center">
             <h1 class="cute-heading text-6xl mb-2">Doroti</h1>
             <p class="text-lg opacity-60 tracking-widest mb-10 uppercase">Instax Studio ♡</p>
             <button onclick="goToGrid()" class="w-full bg-white border-2 border-pink-200 text-pink-500 font-bold py-4 rounded-full shadow-[0_5px_0_#fbcfe8] active:translate-y-1 transition-all">START ♡</button>
         </div>
 
-        <div id="step-grid" class="hidden w-full space-y-4 animate-in slide-in-from-bottom duration-500">
+        <div id="step-grid" class="hidden w-full space-y-4">
             <h2 class="cute-heading text-2xl text-center mb-6">Pick a Style ♡</h2>
-            <div onclick="pick('single')" class="grid-option" id="opt-single">
-                <p class="font-bold text-sm">SINGLE CLASSIC</p>
-            </div>
-            <div onclick="pick('2x2')" class="grid-option" id="opt-2x2">
-                <p class="font-bold text-sm">QUAD FRAME (4 SHOTS)</p>
-            </div>
-            <div onclick="pick('strip')" class="grid-option" id="opt-strip">
-                <p class="font-bold text-sm">4-CUT STRIP</p>
-            </div>
-            <button id="grid-next" onclick="goToBooth()" class="w-full mt-6 bg-pink-400 text-white font-bold py-4 rounded-full opacity-40 cursor-not-allowed">NEXT</button>
+            <div onclick="pick('single')" class="grid-option" id="opt-single">SINGLE CLASSIC</div>
+            <div onclick="pick('2x2')" class="grid-option" id="opt-2x2">QUAD FRAME (4 SHOTS)</div>
+            <div onclick="pick('strip')" class="grid-option" id="opt-strip">4-CUT STRIP</div>
+            <button id="grid-next" onclick="goToBooth()" class="w-full mt-6 bg-pink-200 text-white font-bold py-4 rounded-full transition-all">CHOOSE STYLE</button>
         </div>
 
-        <div id="step-booth" class="hidden w-full flex flex-col items-center animate-in fade-in">
+        <div id="step-booth" class="hidden w-full flex flex-col items-center">
             <div class="instax-card mb-6">
                 <div class="camera-box">
                     <video id="video" autoplay playsinline></video>
@@ -102,6 +87,139 @@
         </div>
 
         <div id="step-result" class="hidden w-full flex flex-col items-center">
+            <div class="instax-card mb-6">
+                <div class="camera-box" style="background: white;">
+                    <img id="final-image" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-grow flex items-center justify-center">
+                    <p class="cute-heading text-xl opacity-60">Doroti Booth ♡</p>
+                </div>
+            </div>
+            <div class="flex gap-2 w-full px-2">
+                <button onclick="downloadImg()" class="flex-1 bg-pink-400 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest shadow-md">SAVE</button>
+                <button onclick="location.reload()" class="flex-1 bg-white border border-pink-100 text-pink-300 font-bold py-4 rounded-2xl text-xs uppercase tracking-widest">RESET</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let mode = '';
+        let photos = [];
+        const video = document.getElementById('video');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function goToGrid() {
+            document.getElementById('step-intro').classList.add('hidden');
+            document.getElementById('step-grid').classList.remove('hidden');
+        }
+
+        function pick(m) {
+            mode = m;
+            document.querySelectorAll('.grid-option').forEach(el => el.classList.remove('active'));
+            document.getElementById('opt-'+m).classList.add('active');
+            const btn = document.getElementById('grid-next');
+            btn.style.backgroundColor = '#f472b6';
+            btn.innerText = "LET'S GO! ♡";
+        }
+
+        async function goToBooth() {
+            if(!mode) return;
+            document.getElementById('step-grid').classList.add('hidden');
+            document.getElementById('step-booth').classList.remove('hidden');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 4/5, facingMode: "user" } });
+                video.srcObject = stream;
+            } catch(e) { alert("Please enable camera access ♡"); }
+        }
+
+        async function startCapture() {
+            document.getElementById('snap-btn').classList.add('hidden');
+            const total = mode === 'single' ? 1 : 4;
+            photos = [];
+            for(let i=0; i<total; i++) {
+                document.getElementById('status-text').innerText = `SHOT ${i+1} OF ${total}`;
+                await runCountdown(3);
+                capture();
+                await new Promise(r => setTimeout(r, 600));
+            }
+            renderFinal();
+        }
+
+        function runCountdown(s) {
+            return new Promise(res => {
+                const countEl = document.getElementById('countdown');
+                countEl.classList.remove('hidden');
+                let c = s; countEl.innerText = c;
+                const itv = setInterval(() => {
+                    c--;
+                    if(c > 0) countEl.innerText = c;
+                    else { clearInterval(itv); countEl.classList.add('hidden'); res(); }
+                }, 800);
+            });
+        }
+
+        function capture() {
+            document.getElementById('flash').classList.add('flash-effect');
+            setTimeout(() => document.getElementById('flash').classList.remove('flash-effect'), 400);
+            const tmp = document.createElement('canvas');
+            tmp.width = 800; tmp.height = 1000;
+            const tCtx = tmp.getContext('2d');
+            tCtx.translate(800, 0); tCtx.scale(-1, 1);
+            tCtx.drawImage(video, 0, 0, 800, 1000);
+            photos.push(tmp.toDataURL('image/png'));
+        }
+
+        function renderFinal() {
+            if(mode === 'single') {
+                canvas.width = 800; canvas.height = 1000;
+                const img = new Image();
+                img.onload = () => { ctx.drawImage(img, 0, 0); finalize(); };
+                img.src = photos[0];
+            } else if(mode === '2x2') {
+                canvas.width = 800; canvas.height = 800;
+                ctx.fillStyle = "white"; ctx.fillRect(0,0,800,800);
+                let loaded = 0;
+                photos.forEach((p, i) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const x = (i%2)*405; const y = Math.floor(i/2)*405;
+                        ctx.drawImage(img, x, y, 395, 395);
+                        if(++loaded === 4) finalize();
+                    };
+                    img.src = p;
+                });
+            } else if(mode === 'strip') {
+                canvas.width = 400; canvas.height = 1200;
+                ctx.fillStyle = "white"; ctx.fillRect(0,0,400,1200);
+                let loaded = 0;
+                photos.forEach((p, i) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        ctx.drawImage(img, 10, 10 + (i*295), 380, 285);
+                        if(++loaded === 4) finalize();
+                    };
+                    img.src = p;
+                });
+            }
+        }
+
+        function finalize() {
+            document.getElementById('step-booth').classList.add('hidden');
+            document.getElementById('step-result').classList.remove('hidden');
+            document.getElementById('final-image').src = canvas.toDataURL('image/png');
+        }
+
+        function downloadImg() {
+            const link = document.createElement('a');
+            link.download = 'doroti_instax.png';
+            link.href = document.getElementById('final-image').src;
+            link.click();
+        }
+    </script>
+</body>
+</html>
             <div class="instax-card mb-6" id="capture-area">
                 <div class="camera-box" style="background: white;">
                     <img id="final-image" class="w-full h-full object-contain">
