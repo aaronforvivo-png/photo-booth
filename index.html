@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOROTI PHOTO BOOTH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Mono:ital,wght@0,400;0,700;1,700&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --y2k-pink: #ff00ff;
+            --y2k-blue: #00ffff;
+            --y2k-purple: #7000ff;
+        }
+        body { 
+            background-color: #050505; 
+            font-family: 'Space Mono', monospace;
+            overflow-x: hidden;
+        }
+        .y2k-heading { font-family: 'Syncopate', sans-serif; text-transform: uppercase; }
+        .pixel-font { font-family: 'VT323', monospace; }
+        
+        /* Retro Grid Background */
+        .grid-bg {
+            background-image: linear-gradient(to right, #1a1a1a 1px, transparent 1px),
+                              linear-gradient(to bottom, #1a1a1a 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Intro Animation */
+        #intro-screen {
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .y2k-border {
+            border: 4px solid var(--y2k-pink);
+            box-shadow: 5px 5px 0px var(--y2k-blue), -5px -5px 0px var(--y2k-purple);
+        }
+
+        .glitch-text {
+            text-shadow: 2px 0 var(--y2k-blue), -2px 0 var(--y2k-pink);
+            animation: glitch 2s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 var(--y2k-blue), -2px 0 var(--y2k-pink); }
+            50% { text-shadow: -2px 0 var(--y2k-blue), 2px 0 var(--y2k-pink); }
+            100% { text-shadow: 1px 0 var(--y2k-purple), -1px 0 var(--y2k-blue); }
+        }
+
+        .mirror { transform: scaleX(-1); }
+        .flash-active { animation: flashAnim 0.4s ease-out; }
+        @keyframes flashAnim {
+            0% { background: white; opacity: 1; }
+            100% { background: transparent; opacity: 0; }
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex items-center justify-center">
+    <div class="grid-bg fixed inset-0 z-0"></div>
+
+    <div id="flash" class="fixed inset-0 z-50 pointer-events-none"></div>
+
+    <div id="intro-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 text-center">
+        <div class="relative mb-8">
+            <div class="absolute -inset-4 bg-pink-500 blur-2xl opacity-20 animate-pulse"></div>
+            <h1 class="y2k-heading text-4xl md:text-6xl font-black italic glitch-text">
+                DOROTI<br><span class="text-transparent" style="-webkit-text-stroke: 1px white;">PHOTO BOOTH</span>
+            </h1>
+        </div>
+        
+        <div class="pixel-font text-2xl text-cyan-400 mb-8 animate-bounce tracking-widest">
+            [ INITIALIZING SYSTEM 2026... ]
+        </div>
+
+        <button onclick="enterBooth()" class="y2k-border bg-white text-black font-black px-12 py-4 text-xl hover:scale-110 transition-transform active:translate-y-1 uppercase">
+            ENTER BOOTH
+        </button>
+
+        <p class="mt-10 text-[10px] uppercase tracking-[0.5em] text-zinc-600">Optimized for Vercel Deployment</p>
+    </div>
+
+    <main id="main-content" class="relative z-10 w-full max-w-xl p-4 opacity-0 transition-opacity duration-1000 pointer-events-none">
+        
+        <div class="flex justify-between items-end mb-6 border-b border-zinc-800 pb-4">
+            <div>
+                <h2 class="y2k-heading text-xl font-bold italic">DOROTI.EXE</h2>
+                <p class="pixel-font text-sm text-pink-500">v1.0.4-beta</p>
+            </div>
+            <div id="status-clock" class="pixel-font text-xl text-zinc-500">00:00:00</div>
+        </div>
+
+        <div id="booth-container" class="relative group">
+            <div class="relative y2k-border bg-zinc-900 overflow-hidden aspect-[3/4]">
+                <video id="video" autoplay playsinline class="w-full h-full object-cover mirror"></video>
+                <canvas id="canvas" class="hidden"></canvas>
+                
+                <div id="countdown" class="absolute inset-0 flex items-center justify-center text-9xl font-black text-white hidden bg-black/40 backdrop-blur-md italic y2k-heading"></div>
+            </div>
+        </div>
+
+        <div id="preview-container" class="hidden flex flex-col items-center space-y-6">
+            <div class="p-3 bg-white shadow-2xl">
+                <img id="photo" class="w-full h-auto">
+                <div class="mt-4 flex justify-between items-center px-2">
+                    <span class="text-black font-black italic text-xs y2k-heading">DOROTI BOOTH</span>
+                    <span id="photo-date" class="text-black font-bold text-[10px] opacity-40">2026/04/02</span>
+                </div>
+            </div>
+
+            <div class="flex gap-2 w-full">
+                <button onclick="downloadPhoto()" class="flex-1 bg-cyan-400 text-black font-black py-4 hover:bg-cyan-300 transition uppercase italic">SAVE FILE</button>
+                <button onclick="retake()" class="flex-1 bg-zinc-800 text-white font-black py-4 hover:bg-zinc-700 transition uppercase italic">RETAKE</button>
+            </div>
+        </div>
+
+        <div id="controls" class="mt-8 flex flex-col items-center gap-6">
+            <div class="flex flex-wrap justify-center gap-2">
+                <button onclick="setFilter('none')" class="px-4 py-1 bg-zinc-800 text-[10px] font-bold hover:bg-pink-500 transition">ORIGINAL</button>
+                <button onclick="setFilter('grayscale(100%)')" class="px-4 py-1 bg-zinc-800 text-[10px] font-bold hover:bg-pink-500 transition">B&W</button>
+                <button onclick="setFilter('sepia(0.6) contrast(1.2) brightness(0.9)')" class="px-4 py-1 bg-zinc-800 text-[10px] font-bold hover:bg-pink-500 transition">VINTAGE</button>
+                <button onclick="setFilter('hue-rotate(90deg) saturate(2)')" class="px-4 py-1 bg-zinc-800 text-[10px] font-bold hover:bg-pink-500 transition">CYBER</button>
+            </div>
+
+            <button onclick="startCountdown()" class="group relative">
+                <div class="absolute -inset-2 bg-pink-500 rounded-full blur opacity-40 group-hover:opacity-80 transition"></div>
+                <div class="relative w-20 h-20 bg-white rounded-full flex items-center justify-center p-2">
+                    <div class="w-full h-full border-2 border-black rounded-full animate-ping absolute"></div>
+                    <div class="w-full h-full bg-black rounded-full"></div>
+                </div>
+            </button>
+            <p class="pixel-font text-zinc-500 tracking-tighter">CLICK TO INITIALIZE CAPTURE</p>
+        </div>
+    </main>
+
+    <script>
+        const intro = document.getElementById('intro-screen');
+        const main = document.getElementById('main-content');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const photo = document.getElementById('photo');
+        const countdownEl = document.getElementById('countdown');
+        const flashEl = document.getElementById('flash');
+        const previewContainer = document.getElementById('preview-container');
+        const boothContainer = document.getElementById('booth-container');
+        const controls = document.getElementById('controls');
+
+        let currentFilter = 'none';
+
+        // Clock setup
+        setInterval(() => {
+            document.getElementById('status-clock').innerText = new Date().toLocaleTimeString('en-GB');
+        }, 1000);
+
+        function enterBooth() {
+            intro.style.opacity = '0';
+            setTimeout(() => {
+                intro.style.visibility = 'hidden';
+                main.classList.remove('opacity-0');
+                main.classList.remove('pointer-events-none');
+                startCamera();
+            }, 800);
+        }
+
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 3/4 } })
+                .then(stream => { video.srcObject = stream; })
+                .catch(err => alert("Camera access required for DOROTI.EXE"));
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            video.style.filter = filter;
+        }
+
+        function startCountdown() {
+            let count = 3;
+            countdownEl.classList.remove('hidden');
+            countdownEl.innerText = count;
+
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownEl.innerText = count;
+                } else {
+                    clearInterval(timer);
+                    countdownEl.classList.add('hidden');
+                    takePicture();
+                }
+            }, 800);
+        }
+
+        function takePicture() {
+            flashEl.classList.add('flash-active');
+            setTimeout(() => flashEl.classList.remove('flash-active'), 400);
+
+            const context = canvas.getContext('2d');
+            canvas.width = 1080;
+            canvas.height = 1440;
+            
+            context.filter = currentFilter;
+            context.translate(canvas.width, 0);
+            context.scale(-1, 1);
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const data = canvas.toDataURL('image/png');
+            photo.src = data;
+            
+            boothContainer.classList.add('hidden');
+            controls.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+            document.getElementById('photo-date').innerText = new Date().toLocaleDateString();
+        }
+
+        function downloadPhoto() {
+            const link = document.createElement('a');
+            link.download = `DOROTI_${Date.now()}.png`;
+            link.href = photo.src;
+            link.click();
+        }
+
+        function retake() {
+            previewContainer.classList.add('hidden');
+            boothContainer.classList.remove('hidden');
+            controls.classList.remove('hidden');
+        }
+    </script>
+</body>
+          </html>
+
