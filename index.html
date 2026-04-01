@@ -8,45 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root { --soft-pink: #fff5f7; --accent-pink: #fbcfe8; --text-color: #704f5e; }
-        body { 
-            background-color: var(--soft-pink); 
-            font-family: 'Quicksand', sans-serif; 
-            color: var(--text-color);
-            margin: 0; padding: 0;
-            display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; overflow: hidden;
-        }
+        body { background-color: var(--soft-pink); font-family: 'Quicksand', sans-serif; color: var(--text-color); margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
         .cute-heading { font-family: 'Cherry Bomb One', cursive; }
-        .viewport-container {
-            width: 100%; max-width: 400px;
-            height: 90vh; max-height: 750px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            position: relative; padding: 20px;
-            z-index: 10;
-        }
-        .instax-card {
-            background: white;
-            padding: 12px 12px 50px 12px;
-            box-shadow: 0 15px 35px rgba(244, 114, 182, 0.15);
-            border-radius: 4px;
-            width: 100%;
-            aspect-ratio: 4 / 5.5;
-            display: flex; flex-direction: column;
-        }
-        .camera-box {
-            background: #f8fafc;
-            width: 100%; height: 100%;
-            overflow: hidden; position: relative;
-            border-radius: 2px;
-        }
+        .viewport-container { width: 100%; max-width: 400px; height: 90vh; max-height: 750px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 20px; z-index: 10; }
+        .instax-card { background: white; padding: 12px 12px 50px 12px; box-shadow: 0 15px 35px rgba(244, 114, 182, 0.15); border-radius: 4px; width: 100%; aspect-ratio: 4 / 5.5; display: flex; flex-direction: column; }
+        .camera-box { background: #f8fafc; width: 100%; height: 100%; overflow: hidden; position: relative; border-radius: 2px; }
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .grid-option {
-            background: white; border: 2px solid var(--accent-pink);
-            border-radius: 16px; padding: 18px; width: 100%;
-            transition: all 0.2s ease; cursor: pointer;
-            text-align: center; font-weight: bold;
-        }
+        .grid-option { background: white; border: 2px solid var(--accent-pink); border-radius: 16px; padding: 18px; width: 100%; transition: all 0.2s ease; cursor: pointer; text-align: center; font-weight: bold; }
         .grid-option.active { background: #fdf2f8; border-color: #f472b6; transform: scale(1.02); }
         .flash-effect { animation: flashAnim 0.4s ease-out; }
         @keyframes flashAnim { 0% { background: white; opacity: 1; } 100% { background: transparent; opacity: 0; } }
@@ -54,536 +22,46 @@
     </style>
 </head>
 <body>
-
     <div id="flash" class="fixed inset-0 z-[200] pointer-events-none"></div>
-
     <div class="viewport-container">
-        
         <div id="step-intro" class="w-full text-center">
             <h1 class="cute-heading text-6xl mb-2">Doroti</h1>
             <p class="text-lg opacity-60 tracking-widest mb-10 uppercase">Instax Studio ♡</p>
             <button onclick="goToGrid()" class="w-full bg-white border-2 border-pink-200 text-pink-500 font-bold py-4 rounded-full shadow-[0_5px_0_#fbcfe8] active:translate-y-1 transition-all">START ♡</button>
         </div>
-
         <div id="step-grid" class="hidden w-full space-y-4">
             <h2 class="cute-heading text-2xl text-center mb-6">Pick a Style ♡</h2>
             <div onclick="pick('single')" class="grid-option" id="opt-single">SINGLE CLASSIC</div>
             <div onclick="pick('2x2')" class="grid-option" id="opt-2x2">QUAD FRAME (4 SHOTS)</div>
             <div onclick="pick('strip')" class="grid-option" id="opt-strip">4-CUT STRIP</div>
-            <button id="grid-next" onclick="goToBooth()" class="w-full mt-6 bg-pink-200 text-white font-bold py-4 rounded-full transition-all">CHOOSE STYLE</button>
+            <button id="grid-next" onclick="goToBooth()" class="w-full mt-6 bg-pink-200 text-white font-bold py-4 rounded-full transition-all uppercase">CHOOSE STYLE</button>
         </div>
-
         <div id="step-booth" class="hidden w-full flex flex-col items-center">
             <div class="instax-card mb-6">
                 <div class="camera-box">
                     <video id="video" autoplay playsinline></video>
                     <div id="countdown" class="absolute inset-0 flex items-center justify-center text-8xl cute-heading text-white hidden bg-pink-200/20 backdrop-blur-sm"></div>
                 </div>
-                <div class="flex-grow flex items-center justify-center">
-                    <p id="status-text" class="text-[10px] font-bold tracking-[0.2em] opacity-40 uppercase italic">Ready to snap</p>
-                </div>
+                <div class="flex-grow flex items-center justify-center"><p id="status-text" class="text-[10px] font-bold tracking-[0.2em] opacity-40 uppercase italic">Ready to snap</p></div>
             </div>
             <button id="snap-btn" onclick="startCapture()" class="w-20 h-20 bg-white border-[6px] border-pink-100 rounded-full shadow-lg active:scale-90 transition-all"></button>
         </div>
-
         <div id="step-result" class="hidden w-full flex flex-col items-center">
-            <div class="instax-card mb-6">
-                <div class="camera-box" style="background: white;">
-                    <img id="final-image" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-grow flex items-center justify-center">
-                    <p class="cute-heading text-xl opacity-60">Doroti Booth ♡</p>
-                </div>
-            </div>
-            <div class="flex gap-2 w-full px-2">
-                <button onclick="downloadImg()" class="flex-1 bg-pink-400 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest shadow-md">SAVE</button>
-                <button onclick="location.reload()" class="flex-1 bg-white border border-pink-100 text-pink-300 font-bold py-4 rounded-2xl text-xs uppercase tracking-widest">RESET</button>
-            </div>
+            <div class="instax-card mb-6"><div class="camera-box" style="background: white;"><img id="final-image" class="w-full h-full object-contain"></div><div class="flex-grow flex items-center justify-center"><p class="cute-heading text-xl opacity-60">Doroti Booth ♡</p></div></div>
+            <div class="flex gap-2 w-full px-2"><button onclick="downloadImg()" class="flex-1 bg-pink-400 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest shadow-md">SAVE</button><button onclick="location.reload()" class="flex-1 bg-white border border-pink-100 text-pink-300 font-bold py-4 rounded-2xl text-xs uppercase tracking-widest">RESET</button></div>
         </div>
-
     </div>
-
     <script>
-        let mode = '';
-        let photos = [];
-        const video = document.getElementById('video');
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        function goToGrid() {
-            document.getElementById('step-intro').classList.add('hidden');
-            document.getElementById('step-grid').classList.remove('hidden');
-        }
-
-        function pick(m) {
-            mode = m;
-            document.querySelectorAll('.grid-option').forEach(el => el.classList.remove('active'));
-            document.getElementById('opt-'+m).classList.add('active');
-            const btn = document.getElementById('grid-next');
-            btn.style.backgroundColor = '#f472b6';
-            btn.innerText = "LET'S GO! ♡";
-        }
-
-        async function goToBooth() {
-            if(!mode) return;
-            document.getElementById('step-grid').classList.add('hidden');
-            document.getElementById('step-booth').classList.remove('hidden');
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 4/5, facingMode: "user" } });
-                video.srcObject = stream;
-            } catch(e) { alert("Please enable camera access ♡"); }
-        }
-
-        async function startCapture() {
-            document.getElementById('snap-btn').classList.add('hidden');
-            const total = mode === 'single' ? 1 : 4;
-            photos = [];
-            for(let i=0; i<total; i++) {
-                document.getElementById('status-text').innerText = `SHOT ${i+1} OF ${total}`;
-                await runCountdown(3);
-                capture();
-                await new Promise(r => setTimeout(r, 600));
-            }
-            renderFinal();
-        }
-
-        function runCountdown(s) {
-            return new Promise(res => {
-                const countEl = document.getElementById('countdown');
-                countEl.classList.remove('hidden');
-                let c = s; countEl.innerText = c;
-                const itv = setInterval(() => {
-                    c--;
-                    if(c > 0) countEl.innerText = c;
-                    else { clearInterval(itv); countEl.classList.add('hidden'); res(); }
-                }, 800);
-            });
-        }
-
-        function capture() {
-            document.getElementById('flash').classList.add('flash-effect');
-            setTimeout(() => document.getElementById('flash').classList.remove('flash-effect'), 400);
-            const tmp = document.createElement('canvas');
-            tmp.width = 800; tmp.height = 1000;
-            const tCtx = tmp.getContext('2d');
-            tCtx.translate(800, 0); tCtx.scale(-1, 1);
-            tCtx.drawImage(video, 0, 0, 800, 1000);
-            photos.push(tmp.toDataURL('image/png'));
-        }
-
-        function renderFinal() {
-            if(mode === 'single') {
-                canvas.width = 800; canvas.height = 1000;
-                const img = new Image();
-                img.onload = () => { ctx.drawImage(img, 0, 0); finalize(); };
-                img.src = photos[0];
-            } else if(mode === '2x2') {
-                canvas.width = 800; canvas.height = 800;
-                ctx.fillStyle = "white"; ctx.fillRect(0,0,800,800);
-                let loaded = 0;
-                photos.forEach((p, i) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const x = (i%2)*405; const y = Math.floor(i/2)*405;
-                        ctx.drawImage(img, x, y, 395, 395);
-                        if(++loaded === 4) finalize();
-                    };
-                    img.src = p;
-                });
-            } else if(mode === 'strip') {
-                canvas.width = 400; canvas.height = 1200;
-                ctx.fillStyle = "white"; ctx.fillRect(0,0,400,1200);
-                let loaded = 0;
-                photos.forEach((p, i) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        ctx.drawImage(img, 10, 10 + (i*295), 380, 285);
-                        if(++loaded === 4) finalize();
-                    };
-                    img.src = p;
-                });
-            }
-        }
-
-        function finalize() {
-            document.getElementById('step-booth').classList.add('hidden');
-            document.getElementById('step-result').classList.remove('hidden');
-            document.getElementById('final-image').src = canvas.toDataURL('image/png');
-        }
-
-        function downloadImg() {
-            const link = document.createElement('a');
-            link.download = 'doroti_instax.png';
-            link.href = document.getElementById('final-image').src;
-            link.click();
-        }
+        let mode = ''; let photos = []; const video = document.getElementById('video'); const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+        function goToGrid() { document.getElementById('step-intro').classList.add('hidden'); document.getElementById('step-grid').classList.remove('hidden'); }
+        function pick(m) { mode = m; document.querySelectorAll('.grid-option').forEach(el => el.classList.remove('active')); document.getElementById('opt-'+m).classList.add('active'); const btn = document.getElementById('grid-next'); btn.style.backgroundColor = '#f472b6'; btn.innerText = "LET'S GO! ♡"; }
+        async function goToBooth() { if(!mode) return; document.getElementById('step-grid').classList.add('hidden'); document.getElementById('step-booth').classList.remove('hidden'); try { const stream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 4/5, facingMode: "user" } }); video.srcObject = stream; } catch(e) { alert("Please enable camera access ♡"); } }
+        async function startCapture() { document.getElementById('snap-btn').classList.add('hidden'); const total = mode === 'single' ? 1 : 4; photos = []; for(let i=0; i<total; i++) { document.getElementById('status-text').innerText = `SHOT ${i+1} OF ${total}`; await runCountdown(3); capture(); await new Promise(r => setTimeout(r, 600)); } renderFinal(); }
+        function runCountdown(s) { return new Promise(res => { const countEl = document.getElementById('countdown'); countEl.classList.remove('hidden'); let c = s; countEl.innerText = c; const itv = setInterval(() => { c--; if(c > 0) countEl.innerText = c; else { clearInterval(itv); countEl.classList.add('hidden'); res(); } }, 800); }); }
+        function capture() { document.getElementById('flash').classList.add('flash-effect'); setTimeout(() => document.getElementById('flash').classList.remove('flash-effect'), 400); const tmp = document.createElement('canvas'); tmp.width = 800; tmp.height = 1000; const tCtx = tmp.getContext('2d'); tCtx.translate(800, 0); tCtx.scale(-1, 1); tCtx.drawImage(video, 0, 0, 800, 1000); photos.push(tmp.toDataURL('image/png')); }
+        function renderFinal() { if(mode === 'single') { canvas.width = 800; canvas.height = 1000; const img = new Image(); img.onload = () => { ctx.drawImage(img, 0, 0); finalize(); }; img.src = photos[0]; } else if(mode === '2x2') { canvas.width = 800; canvas.height = 800; ctx.fillStyle = "white"; ctx.fillRect(0,0,800,800); let loaded = 0; photos.forEach((p, i) => { const img = new Image(); img.onload = () => { const x = (i%2)*405; const y = Math.floor(i/2)*405; ctx.drawImage(img, x, y, 395, 395); if(++loaded === 4) finalize(); }; img.src = p; }); } else if(mode === 'strip') { canvas.width = 400; canvas.height = 1200; ctx.fillStyle = "white"; ctx.fillRect(0,0,400,1200); let loaded = 0; photos.forEach((p, i) => { const img = new Image(); img.onload = () => { ctx.drawImage(img, 10, 10 + (i*295), 380, 285); if(++loaded === 4) finalize(); }; img.src = p; }); } }
+        function finalize() { document.getElementById('step-booth').classList.add('hidden'); document.getElementById('step-result').classList.remove('hidden'); document.getElementById('final-image').src = canvas.toDataURL('image/png'); }
+        function downloadImg() { const link = document.createElement('a'); link.download = 'doroti_instax.png'; link.href = document.getElementById('final-image').src; link.click(); }
     </script>
 </body>
 </html>
-            <div class="instax-card mb-6" id="capture-area">
-                <div class="camera-box" style="background: white;">
-                    <img id="final-image" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-grow flex items-center justify-center">
-                    <p class="cute-heading text-xl opacity-60">Doroti Booth ♡</p>
-                </div>
-            </div>
-            <div class="flex gap-2 w-full px-2">
-                <button onclick="downloadImg()" class="flex-1 bg-pink-400 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest shadow-md">SAVE</button>
-                <button onclick="location.reload()" class="flex-1 bg-white border border-pink-100 text-pink-300 font-bold py-4 rounded-2xl text-xs uppercase tracking-widest">RESET</button>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        let mode = '';
-        let photos = [];
-        const video = document.getElementById('video');
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        function goToGrid() {
-            document.getElementById('step-intro').classList.add('hidden');
-            document.getElementById('step-grid').classList.remove('hidden');
-        }
-
-        function pick(m) {
-            mode = m;
-            document.querySelectorAll('.grid-option').forEach(el => el.classList.remove('active'));
-            document.getElementById('opt-'+m).classList.add('active');
-            const btn = document.getElementById('grid-next');
-            btn.classList.remove('opacity-40', 'cursor-not-allowed');
-            btn.style.backgroundColor = '#f472b6';
-        }
-
-        async function goToBooth() {
-            if(!mode) return;
-            document.getElementById('step-grid').classList.add('hidden');
-            document.getElementById('step-booth').classList.remove('hidden');
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 4/5, facingMode: "user" } });
-            video.srcObject = stream;
-        }
-
-        async function startCapture() {
-            document.getElementById('snap-btn').classList.add('hidden');
-            const total = mode === 'single' ? 1 : 4;
-            photos = [];
-
-            for(let i=0; i<total; i++) {
-                document.getElementById('status-text').innerText = `SHOT ${i+1} OF ${total}`;
-                await runCountdown(3);
-                capture();
-                await new Promise(r => setTimeout(r, 800));
-            }
-            renderFinal();
-        }
-
-        function runCountdown(s) {
-            return new Promise(res => {
-                const countEl = document.getElementById('countdown');
-                countEl.classList.remove('hidden');
-                let c = s;
-                countEl.innerText = c;
-                const itv = setInterval(() => {
-                    c--;
-                    if(c > 0) countEl.innerText = c;
-                    else { clearInterval(itv); countEl.classList.add('hidden'); res(); }
-                }, 800);
-            });
-        }
-
-        function capture() {
-            document.getElementById('flash').classList.add('flash-effect');
-            setTimeout(() => document.getElementById('flash').classList.remove('flash-effect'), 400);
-            
-            const tmp = document.createElement('canvas');
-            tmp.width = 800; tmp.height = 1000;
-            const tCtx = tmp.getContext('2d');
-            tCtx.translate(800, 0); tCtx.scale(-1, 1);
-            tCtx.drawImage(video, 0, 0, 800, 1000);
-            photos.push(tmp.toDataURL('image/png'));
-        }
-
-        function renderFinal() {
-            if(mode === 'single') {
-                canvas.width = 800; canvas.height = 1000;
-                const img = new Image();
-                img.onload = () => { ctx.drawImage(img, 0, 0); showResult(); };
-                img.src = photos[0];
-            } else if(mode === '2x2') {
-                canvas.width = 800; canvas.height = 800;
-                ctx.fillStyle = "white"; ctx.fillRect(0,0,800,800);
-                photos.forEach((p, i) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const x = (i%2)*405; const y = Math.floor(i/2)*405;
-                        ctx.drawImage(img, x, y, 395, 395);
-                        if(i === 3) showResult();
-                    };
-                    img.src = p;
-                });
-            } else if(mode === 'strip') {
-                canvas.width = 400; canvas.height = 1200;
-                ctx.fillStyle = "white"; ctx.fillRect(0,0,400,1200);
-                photos.forEach((p, i) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        ctx.drawImage(img, 10, 10 + (i*295), 380, 285);
-                        if(i === 3) showResult();
-                    };
-                    img.src = p;
-                });
-            }
-        }
-
-        function showResult() {
-            document.getElementById('step-booth').classList.add('hidden');
-            document.getElementById('step-result').classList.remove('hidden');
-            document.getElementById('final-image').src = canvas.toDataURL('image/png');
-        }
-
-        function downloadImg() {
-            const link = document.createElement('a');
-            link.download = 'doroti_instax.png';
-            link.href = document.getElementById('final-image').src;
-            link.click();
-        }
-    </script>
-</body>
-</html>
-
-        function selectGrid(type) {
-            selectedGrid = type;
-            totalShots = (type === 'single') ? 1 : 4;
-            document.querySelectorAll('.soft-card').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            const btn = document.getElementById('proceed-btn');
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            btn.innerText = "Let's Go! ♡";
-        }
-
-        function startBooth() {
-            if(!selectedGrid) return;
-            document.getElementById('grid-screen').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('hidden');
-            navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 4/5 } }).then(s => video.srcObject = s);
-        }
-
-        function setFilter(f) { currentFilter = f; video.style.filter = f; }
-
-        async function startSession() {
-            document.getElementById('controls').classList.add('hidden');
-            capturedImages = [];
-            for (let i = 0; i < totalShots; i++) {
-                document.getElementById('shots-left').innerText = `Shot ${i + 1} of ${totalShots}`;
-                await countdown(3);
-                captureShot();
-                if (i < totalShots - 1) await new Promise(r => setTimeout(r, 1000));
-            }
-            generateFinalFrame();
-        }
-
-        function countdown(sec) {
-            return new Promise(resolve => {
-                const el = document.getElementById('countdown');
-                el.classList.remove('hidden');
-                let count = sec;
-                el.innerText = count;
-                const timer = setInterval(() => {
-                    count--;
-                    if(count > 0) el.innerText = count;
-                    else { clearInterval(timer); el.classList.add('hidden'); resolve(); }
-                }, 800);
-            });
-        }
-
-        function captureShot() {
-            document.getElementById('flash').classList.add('flash-active');
-            setTimeout(() => document.getElementById('flash').classList.remove('flash-active'), 400);
-            
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = 1080; tempCanvas.height = 1350;
-            const tCtx = tempCanvas.getContext('2d');
-            tCtx.filter = currentFilter;
-            tCtx.translate(tempCanvas.width, 0); tCtx.scale(-1, 1);
-            tCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
-            capturedImages.push(tempCanvas.toDataURL('image/png'));
-        }
-
-        function generateFinalFrame() {
-            // Setup canvas based on grid
-            if(selectedGrid === 'single') {
-                canvas.width = 1080; canvas.height = 1350;
-                const img = new Image(); img.onload = () => { ctx.drawImage(img, 0,0); finalize(); };
-                img.src = capturedImages[0];
-            } else if(selectedGrid === '2x2') {
-                canvas.width = 1080; canvas.height = 1080;
-                ctx.fillStyle = "white"; ctx.fillRect(0,0,canvas.width,canvas.height);
-                let loaded = 0;
-                capturedImages.forEach((src, i) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const x = (i % 2) * 545; const y = Math.floor(i / 2) * 545;
-                        ctx.drawImage(img, x, y, 535, 535);
-                        if(++loaded === 4) finalize();
-                    };
-                    img.src = src;
-                });
-            } else if(selectedGrid === 'strip') {
-                canvas.width = 500; canvas.height = 1600;
-                ctx.fillStyle = "white"; ctx.fillRect(0,0,canvas.width,canvas.height);
-                let loaded = 0;
-                capturedImages.forEach((src, i) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        ctx.drawImage(img, 10, 10 + (i * 395), 480, 385);
-                        if(++loaded === 4) finalize();
-                    };
-                    img.src = src;
-                });
-            }
-        }
-
-        function finalize() {
-            document.querySelector('.instax-frame').classList.add('hidden');
-            document.getElementById('preview-container').classList.remove('hidden');
-            document.getElementById('final-image').src = canvas.toDataURL('image/png');
-        }
-
-        function downloadPhoto() {
-            const link = document.createElement('a');
-            link.download = `Doroti_Memory_${Date.now()}.png`;
-            link.href = document.getElementById('final-image').src;
-            link.click();
-        }
-    </script>
-</body>
-</html>
-                <img id="photo" class="w-full h-auto">
-                <div class="mt-4 flex justify-between items-center px-2">
-                    <span class="text-black font-black italic text-xs y2k-heading">DOROTI BOOTH</span>
-                    <span id="photo-date" class="text-black font-bold text-[10px] opacity-40">2026/04/02</span>
-                </div>
-            </div>
-
-            <div class="flex gap-2 w-full">
-                <button onclick="downloadPhoto()" class="flex-1 bg-cyan-400 text-black font-black py-4 hover:bg-cyan-300 transition uppercase italic">SAVE FILE</button>
-                <button onclick="retake()" class="flex-1 bg-zinc-800 text-white font-black py-4 hover:bg-zinc-700 transition uppercase italic">RETAKE</button>
-            </div>
-        </div>
-
-        <div id="controls" class="mt-8 flex flex-col items-center gap-6">
-            <div class="flex flex-wrap justify-center gap-2">
-                <button onclick="setFilter('none')" class="px-4 py-1 bg-zinc-800 text-[10px] font-bold hover:bg-pink-500 transition">ORIGINAL</button>
-                <button onclick="setFilter('grayscale(100%)')" class="px-4 py-1 bg-zinc-800 text-[10px] font-bold hover:bg-pink-500 transition">B&W</button>
-                <button onclick="setFilter('sepia(0.6) contrast(1.2) brightness(0.9)')" class="px-4 py-1 bg-zinc-800 text-[10px] font-bold hover:bg-pink-500 transition">VINTAGE</button>
-                <button onclick="setFilter('hue-rotate(90deg) saturate(2)')" class="px-4 py-1 bg-zinc-800 text-[10px] font-bold hover:bg-pink-500 transition">CYBER</button>
-            </div>
-
-            <button onclick="startCountdown()" class="group relative">
-                <div class="absolute -inset-2 bg-pink-500 rounded-full blur opacity-40 group-hover:opacity-80 transition"></div>
-                <div class="relative w-20 h-20 bg-white rounded-full flex items-center justify-center p-2">
-                    <div class="w-full h-full border-2 border-black rounded-full animate-ping absolute"></div>
-                    <div class="w-full h-full bg-black rounded-full"></div>
-                </div>
-            </button>
-            <p class="pixel-font text-zinc-500 tracking-tighter">CLICK TO INITIALIZE CAPTURE</p>
-        </div>
-    </main>
-
-    <script>
-        const intro = document.getElementById('intro-screen');
-        const main = document.getElementById('main-content');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const photo = document.getElementById('photo');
-        const countdownEl = document.getElementById('countdown');
-        const flashEl = document.getElementById('flash');
-        const previewContainer = document.getElementById('preview-container');
-        const boothContainer = document.getElementById('booth-container');
-        const controls = document.getElementById('controls');
-
-        let currentFilter = 'none';
-
-        // Clock setup
-        setInterval(() => {
-            document.getElementById('status-clock').innerText = new Date().toLocaleTimeString('en-GB');
-        }, 1000);
-
-        function enterBooth() {
-            intro.style.opacity = '0';
-            setTimeout(() => {
-                intro.style.visibility = 'hidden';
-                main.classList.remove('opacity-0');
-                main.classList.remove('pointer-events-none');
-                startCamera();
-            }, 800);
-        }
-
-        function startCamera() {
-            navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 3/4 } })
-                .then(stream => { video.srcObject = stream; })
-                .catch(err => alert("Camera access required for DOROTI.EXE"));
-        }
-
-        function setFilter(filter) {
-            currentFilter = filter;
-            video.style.filter = filter;
-        }
-
-        function startCountdown() {
-            let count = 3;
-            countdownEl.classList.remove('hidden');
-            countdownEl.innerText = count;
-
-            const timer = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownEl.innerText = count;
-                } else {
-                    clearInterval(timer);
-                    countdownEl.classList.add('hidden');
-                    takePicture();
-                }
-            }, 800);
-        }
-
-        function takePicture() {
-            flashEl.classList.add('flash-active');
-            setTimeout(() => flashEl.classList.remove('flash-active'), 400);
-
-            const context = canvas.getContext('2d');
-            canvas.width = 1080;
-            canvas.height = 1440;
-            
-            context.filter = currentFilter;
-            context.translate(canvas.width, 0);
-            context.scale(-1, 1);
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const data = canvas.toDataURL('image/png');
-            photo.src = data;
-            
-            boothContainer.classList.add('hidden');
-            controls.classList.add('hidden');
-            previewContainer.classList.remove('hidden');
-            document.getElementById('photo-date').innerText = new Date().toLocaleDateString();
-        }
-
-        function downloadPhoto() {
-            const link = document.createElement('a');
-            link.download = `DOROTI_${Date.now()}.png`;
-            link.href = photo.src;
-            link.click();
-        }
-
-        function retake() {
-            previewContainer.classList.add('hidden');
-            boothContainer.classList.remove('hidden');
-            controls.classList.remove('hidden');
-        }
-    </script>
-</body>
-          </html>
-
