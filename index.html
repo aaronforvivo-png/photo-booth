@@ -3,105 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOROTI PHOTO BOOTH</title>
+    <title>Doroti Instax Booth ♡</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Mono:ital,wght@0,400;0,700;1,700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --y2k-pink: #ff00ff;
-            --y2k-blue: #00ffff;
-            --y2k-purple: #7000ff;
-        }
-        body { 
-            background-color: #050505; 
-            font-family: 'Space Mono', monospace;
-            overflow-x: hidden;
-        }
-        .y2k-heading { font-family: 'Syncopate', sans-serif; text-transform: uppercase; }
-        .pixel-font { font-family: 'VT323', monospace; }
+        :root { --soft-pink: #fdf2f8; --accent-pink: #fbcfe8; --text-color: #704f5e; }
+        body { background-color: var(--soft-pink); font-family: 'Quicksand', sans-serif; color: var(--text-color); overflow-x: hidden; }
+        .cute-heading { font-family: 'Cherry Bomb One', cursive; }
+        .bg-pattern { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f9a8d4' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
         
-        /* Retro Grid Background */
-        .grid-bg {
-            background-image: linear-gradient(to right, #1a1a1a 1px, transparent 1px),
-                              linear-gradient(to bottom, #1a1a1a 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
+        .soft-card { background: white; border: 2px solid var(--accent-pink); border-radius: 24px; box-shadow: 0 8px 0 var(--accent-pink); transition: all 0.2s; cursor: pointer; }
+        .soft-card:hover { transform: translateY(-5px); box-shadow: 0 12px 0 var(--accent-pink); }
+        .soft-card.active { border-color: #f472b6; background: #fff1f2; transform: scale(1.05); }
 
-        /* Intro Animation */
-        #intro-screen {
-            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
-            transition: opacity 0.8s ease, visibility 0.8s;
-        }
-
-        .y2k-border {
-            border: 4px solid var(--y2k-pink);
-            box-shadow: 5px 5px 0px var(--y2k-blue), -5px -5px 0px var(--y2k-purple);
-        }
-
-        .glitch-text {
-            text-shadow: 2px 0 var(--y2k-blue), -2px 0 var(--y2k-pink);
-            animation: glitch 2s infinite linear alternate-reverse;
-        }
-
-        @keyframes glitch {
-            0% { text-shadow: 2px 0 var(--y2k-blue), -2px 0 var(--y2k-pink); }
-            50% { text-shadow: -2px 0 var(--y2k-blue), 2px 0 var(--y2k-pink); }
-            100% { text-shadow: 1px 0 var(--y2k-purple), -1px 0 var(--y2k-blue); }
-        }
-
+        .instax-frame { background: white; padding: 12px 12px 40px 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-radius: 2px; }
         .mirror { transform: scaleX(-1); }
         .flash-active { animation: flashAnim 0.4s ease-out; }
-        @keyframes flashAnim {
-            0% { background: white; opacity: 1; }
-            100% { background: transparent; opacity: 0; }
-        }
+        @keyframes flashAnim { 0% { background: white; opacity: 1; } 100% { background: transparent; opacity: 0; } }
     </style>
 </head>
-<body class="text-white min-h-screen flex items-center justify-center">
-    <div class="grid-bg fixed inset-0 z-0"></div>
+<body class="min-h-screen flex items-center justify-center py-10">
+    <div class="bg-pattern fixed inset-0 z-0"></div>
+    <div id="flash" class="fixed inset-0 z-[110] pointer-events-none"></div>
 
-    <div id="flash" class="fixed inset-0 z-50 pointer-events-none"></div>
-
-    <div id="intro-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 text-center">
-        <div class="relative mb-8">
-            <div class="absolute -inset-4 bg-pink-500 blur-2xl opacity-20 animate-pulse"></div>
-            <h1 class="y2k-heading text-4xl md:text-6xl font-black italic glitch-text">
-                DOROTI<br><span class="text-transparent" style="-webkit-text-stroke: 1px white;">PHOTO BOOTH</span>
-            </h1>
-        </div>
-        
-        <div class="pixel-font text-2xl text-cyan-400 mb-8 animate-bounce tracking-widest">
-            [ INITIALIZING SYSTEM 2026... ]
-        </div>
-
-        <button onclick="enterBooth()" class="y2k-border bg-white text-black font-black px-12 py-4 text-xl hover:scale-110 transition-transform active:translate-y-1 uppercase">
-            ENTER BOOTH
-        </button>
-
-        <p class="mt-10 text-[10px] uppercase tracking-[0.5em] text-zinc-600">Optimized for Vercel Deployment</p>
+    <div id="intro-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 text-center bg-pattern bg-[#fdf2f8]">
+        <h1 class="cute-heading text-7xl mb-2">Doroti</h1>
+        <p class="text-xl tracking-widest mb-10 opacity-70">INSTAX STUDIO ♡</p>
+        <button onclick="showGridSelection()" class="bg-white border-2 border-pink-200 text-pink-500 font-bold px-14 py-4 rounded-full shadow-[0_5px_0_#fbcfe8] hover:bg-pink-50 transition-all uppercase tracking-widest">Start Adventure ♡</button>
     </div>
 
-    <main id="main-content" class="relative z-10 w-full max-w-xl p-4 opacity-0 transition-opacity duration-1000 pointer-events-none">
-        
-        <div class="flex justify-between items-end mb-6 border-b border-zinc-800 pb-4">
-            <div>
-                <h2 class="y2k-heading text-xl font-bold italic">DOROTI.EXE</h2>
-                <p class="pixel-font text-sm text-pink-500">v1.0.4-beta</p>
+    <div id="grid-screen" class="hidden relative z-10 w-full max-w-4xl px-6 flex flex-col items-center">
+        <h2 class="cute-heading text-4xl mb-10 text-center">Choose your style ♡</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+            <div onclick="selectGrid('single')" class="soft-card p-6 flex flex-col items-center">
+                <div class="w-20 h-24 bg-zinc-200 border-4 border-white shadow-sm mb-4"></div>
+                <span class="font-bold uppercase tracking-tighter">Single Shot</span>
             </div>
-            <div id="status-clock" class="pixel-font text-xl text-zinc-500">00:00:00</div>
+            <div onclick="selectGrid('2x2')" class="soft-card p-6 flex flex-col items-center">
+                <div class="grid grid-cols-2 gap-1 mb-4">
+                    <div class="w-10 h-10 bg-zinc-200"></div><div class="w-10 h-10 bg-zinc-200"></div>
+                    <div class="w-10 h-10 bg-zinc-200"></div><div class="w-10 h-10 bg-zinc-200"></div>
+                </div>
+                <span class="font-bold uppercase tracking-tighter">Quad Frame</span>
+            </div>
+            <div onclick="selectGrid('strip')" class="soft-card p-6 flex flex-col items-center">
+                <div class="flex flex-col gap-1 mb-4">
+                    <div class="w-12 h-8 bg-zinc-200"></div><div class="w-12 h-8 bg-zinc-200"></div>
+                    <div class="w-12 h-8 bg-zinc-200"></div><div class="w-12 h-8 bg-zinc-200"></div>
+                </div>
+                <span class="font-bold uppercase tracking-tighter">4-Cut Strip</span>
+            </div>
         </div>
+        <button id="proceed-btn" onclick="startBooth()" class="mt-12 opacity-50 cursor-not-allowed bg-pink-400 text-white font-bold px-10 py-3 rounded-full uppercase tracking-widest transition-all">Select a style</button>
+    </div>
 
-        <div id="booth-container" class="relative group">
-            <div class="relative y2k-border bg-zinc-900 overflow-hidden aspect-[3/4]">
+    <main id="main-content" class="hidden relative z-10 w-full max-w-md p-4 flex flex-col items-center">
+        <div class="instax-frame w-full mb-6">
+            <div class="relative bg-zinc-100 aspect-[4/5] overflow-hidden rounded-sm">
                 <video id="video" autoplay playsinline class="w-full h-full object-cover mirror"></video>
                 <canvas id="canvas" class="hidden"></canvas>
-                
-                <div id="countdown" class="absolute inset-0 flex items-center justify-center text-9xl font-black text-white hidden bg-black/40 backdrop-blur-md italic y2k-heading"></div>
+                <div id="countdown" class="absolute inset-0 flex items-center justify-center text-8xl cute-heading text-white hidden bg-pink-100/20 backdrop-blur-sm"></div>
             </div>
+            <p id="shots-left" class="mt-4 text-[10px] font-bold text-center opacity-40 uppercase tracking-[0.3em]">Ready to snap</p>
         </div>
 
-        <div id="preview-container" class="hidden flex flex-col items-center space-y-6">
-            <div class="p-3 bg-white shadow-2xl">
+        <div id="controls" class="flex flex-col items-center gap-6">
+            <div class="flex gap-2 p-1 bg-white/50 rounded-full border border-pink-100">
+                <button onclick="setFilter('none')" class="px-3 py-1 text-[10px] font-bold hover:bg-white rounded-full">NATURAL</button>
+                <button onclick="setFilter('sepia(0.3) brightness(1.1)')" class="px-3 py-1 text-[10px] font-bold hover:bg-white rounded-full">CREAM</button>
+                <button onclick="setFilter('grayscale(100%)')" class="px-3 py-1 text-[10px] font-bold hover:bg-white rounded-full">B&W</button>
+            </div>
+            <button onclick="startSession()" class="w-20 h-20 bg-white border-8 border-pink-100 rounded-full shadow-lg active:scale-90 transition-transform"></button>
+        </div>
+
+        <div id="preview-container" class="hidden w-full flex flex-col items-center animate-in fade-in duration-700">
+            <div id="final-result-frame" class="instax-frame inline-block shadow-2xl mb-8">
+                <img id="final-image" class="max-w-full h-auto">
+                <p class="mt-4 cute-heading text-xl text-center opacity-60">Doroti ♡</p>
+            </div>
+            <div class="flex gap-2 w-full">
+                <button onclick="downloadPhoto()" class="flex-1 bg-pink-400 text-white font-bold py-4 rounded-2xl shadow-lg uppercase text-xs tracking-widest">Save Memory</button>
+                <button onclick="location.reload()" class="flex-1 bg-white text-pink-400 border border-pink-200 font-bold py-4 rounded-2xl uppercase text-xs tracking-widest">New Session</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let selectedGrid = null;
+        let capturedImages = [];
+        let totalShots = 1;
+        let currentFilter = 'none';
+
+        const video = document.getElementById('video');
+        const canvas = document.createElement('canvas'); // Offline canvas
+        const ctx = canvas.getContext('2d');
+
+        function showGridSelection() {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('grid-screen').classList.remove('hidden');
+        }
+
+        function selectGrid(type) {
+            selectedGrid = type;
+            totalShots = (type === 'single') ? 1 : 4;
+            document.querySelectorAll('.soft-card').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            const btn = document.getElementById('proceed-btn');
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.innerText = "Let's Go! ♡";
+        }
+
+        function startBooth() {
+            if(!selectedGrid) return;
+            document.getElementById('grid-screen').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 4/5 } }).then(s => video.srcObject = s);
+        }
+
+        function setFilter(f) { currentFilter = f; video.style.filter = f; }
+
+        async function startSession() {
+            document.getElementById('controls').classList.add('hidden');
+            capturedImages = [];
+            for (let i = 0; i < totalShots; i++) {
+                document.getElementById('shots-left').innerText = `Shot ${i + 1} of ${totalShots}`;
+                await countdown(3);
+                captureShot();
+                if (i < totalShots - 1) await new Promise(r => setTimeout(r, 1000));
+            }
+            generateFinalFrame();
+        }
+
+        function countdown(sec) {
+            return new Promise(resolve => {
+                const el = document.getElementById('countdown');
+                el.classList.remove('hidden');
+                let count = sec;
+                el.innerText = count;
+                const timer = setInterval(() => {
+                    count--;
+                    if(count > 0) el.innerText = count;
+                    else { clearInterval(timer); el.classList.add('hidden'); resolve(); }
+                }, 800);
+            });
+        }
+
+        function captureShot() {
+            document.getElementById('flash').classList.add('flash-active');
+            setTimeout(() => document.getElementById('flash').classList.remove('flash-active'), 400);
+            
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 1080; tempCanvas.height = 1350;
+            const tCtx = tempCanvas.getContext('2d');
+            tCtx.filter = currentFilter;
+            tCtx.translate(tempCanvas.width, 0); tCtx.scale(-1, 1);
+            tCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+            capturedImages.push(tempCanvas.toDataURL('image/png'));
+        }
+
+        function generateFinalFrame() {
+            // Setup canvas based on grid
+            if(selectedGrid === 'single') {
+                canvas.width = 1080; canvas.height = 1350;
+                const img = new Image(); img.onload = () => { ctx.drawImage(img, 0,0); finalize(); };
+                img.src = capturedImages[0];
+            } else if(selectedGrid === '2x2') {
+                canvas.width = 1080; canvas.height = 1080;
+                ctx.fillStyle = "white"; ctx.fillRect(0,0,canvas.width,canvas.height);
+                let loaded = 0;
+                capturedImages.forEach((src, i) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const x = (i % 2) * 545; const y = Math.floor(i / 2) * 545;
+                        ctx.drawImage(img, x, y, 535, 535);
+                        if(++loaded === 4) finalize();
+                    };
+                    img.src = src;
+                });
+            } else if(selectedGrid === 'strip') {
+                canvas.width = 500; canvas.height = 1600;
+                ctx.fillStyle = "white"; ctx.fillRect(0,0,canvas.width,canvas.height);
+                let loaded = 0;
+                capturedImages.forEach((src, i) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        ctx.drawImage(img, 10, 10 + (i * 395), 480, 385);
+                        if(++loaded === 4) finalize();
+                    };
+                    img.src = src;
+                });
+            }
+        }
+
+        function finalize() {
+            document.querySelector('.instax-frame').classList.add('hidden');
+            document.getElementById('preview-container').classList.remove('hidden');
+            document.getElementById('final-image').src = canvas.toDataURL('image/png');
+        }
+
+        function downloadPhoto() {
+            const link = document.createElement('a');
+            link.download = `Doroti_Memory_${Date.now()}.png`;
+            link.href = document.getElementById('final-image').src;
+            link.click();
+        }
+    </script>
+</body>
+</html>
                 <img id="photo" class="w-full h-auto">
                 <div class="mt-4 flex justify-between items-center px-2">
                     <span class="text-black font-black italic text-xs y2k-heading">DOROTI BOOTH</span>
